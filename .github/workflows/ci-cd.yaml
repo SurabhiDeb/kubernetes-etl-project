@@ -1,0 +1,38 @@
+name: Build and Deploy ETL Worker
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Configure gcloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker authentication
+      run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    - name: Build Docker image
+      run: |
+        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/etl-repo/etl-worker:latest etl_worker
+
+    - name: Push Docker image
+      run: |
+        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/etl-repo/etl-worker:latest
+
+    - name: Update ETL job in GKE
+      run: |
+        gcloud container clusters get-credentials etl-cluster --zone us-central1-a --project ${{ secrets.GCP_PROJECT }}
+        kubectl delete job etl-run -n etl --ignore-not-found
+        kubectl apply -f etl-job.yaml
