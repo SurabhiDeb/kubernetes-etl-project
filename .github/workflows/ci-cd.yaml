@@ -25,11 +25,11 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/etl-repo/etl-worker:latest etl_worker
+        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/etl-repo/etl-worker:latest etl_worker
 
     - name: Push Docker image
       run: |
-        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/etl-repo/etl-worker:latest
+        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/etl-repo/etl-worker:latest
 
     - name: Update ETL job in GKE
       run: |
