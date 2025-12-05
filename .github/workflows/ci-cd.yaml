@@ -39,8 +39,7 @@ jobs:
       run: |
         docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/etl-repo/etl-worker:latest
 
-    - name: Update ETL job in GKE
-      run: |
-        gcloud container clusters get-credentials etl-cluster --zone us-central1-a --project ${{ secrets.GCP_PROJECT_ID }}
-        kubectl delete job etl-run -n etl --ignore-not-found
-        kubectl apply -f etl-cronjob.yaml
+    - name: name: Update ETL CronJob in GKE
+  run: |
+    gcloud container clusters get-credentials etl-cluster --zone us-central1-a --project ${{ secrets.GCP_PROJECT }}
+    kubectl apply -f etl_cronjob.yaml
