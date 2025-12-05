@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etl-cron
+  namespace: etl
+spec:
+  schedule: "0 0 * * *"   # runs every day at midnight
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: etl-worker-sa
+          containers:
+          - name: etl-worker
+            image: us-central1-docker.pkg.dev/kubernetes-project-480307/etl-repo/etl-worker:latest
+            envFrom:
+            - configMapRef:
+                name: etl-config
+          restartPolicy: Never
